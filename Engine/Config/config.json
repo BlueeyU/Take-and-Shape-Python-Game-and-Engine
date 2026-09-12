@@ -1,0 +1,5 @@
+{
+    "ExampleKey": "ExampleValue",
+    "WorldSizeLimit": "(-2147483647, 2147483647)",
+    "Debugmode": "False"
+}

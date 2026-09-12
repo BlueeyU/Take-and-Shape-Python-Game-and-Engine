@@ -1,0 +1,21 @@
+1. NumPy arrays
+2. Fix Performance Issues (Probably due to SpatialGrid and poor ECS Management)
+5. Animation System
+6. Font System
+9. Functional Save System
+10. Proper Input System
+11. Audio System
+12. Expanding Phyiscs System
+13. Proper Config, Flag and Tag System
+14. Debug Overlay / HUD Overlay System
+15. Network System
+16. Proper Asset System
+
+Currently Working on:
+    10 + 16
+
+Almost Finished:
+
+
+Planing on doing Next:
+    13 + 9
