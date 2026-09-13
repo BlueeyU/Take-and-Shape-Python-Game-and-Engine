@@ -1,45 +1,136 @@
+from dataclasses import dataclass, field
 import pygame
+import os
 
+@dataclass
+class Registry:
+    TextureRegistry: dict
+    SoundRegistry: dict
+
+    TEXTURE_DIRECTORY: str
+    SOUND_DIRECTORY: str
+
+    def registerTexture(self, texture: str, path: str):
+        if texture in self.TextureRegistry:
+            raise Exception(f"Texture: {texture} already registered")
+
+        self.TextureRegistry[texture] = os.path.join(
+            self.TEXTURE_DIRECTORY,
+            path
+        )
+
+        return texture
+
+    def registerSound(self, sound: str, path: str):
+        if sound in self.SoundRegistry:
+            raise Exception(f"Sound: {sound} already registered")
+
+        self.SoundRegistry[sound] = os.path.join(
+            self.SOUND_DIRECTORY,
+            path
+        )
+
+        return sound
+
+@dataclass
+class Loader:
+    Textures: dict
+    Sounds: dict
+
+    TextureRegistry: dict
+    SoundRegistry: dict
+
+    def loadTexture(self, texture: str):
+        if texture in self.Textures:
+            raise Exception(f"Texture: {texture} already loaded")
+
+        if texture not in self.TextureRegistry:
+            raise Exception(f"Texture: {texture} not registered")
+
+        self.Textures[texture] = (
+            pygame.image.load(
+                self.TextureRegistry[texture]
+            ).convert_alpha()
+        )
+
+    def loadSound(self, sound: str):
+        if sound in self.Sounds:
+            raise Exception(f"Sound: {sound} already loaded")
+
+        if sound not in self.SoundRegistry:
+            raise Exception(f"Sound: {sound} not registered")
+
+        self.Sounds[sound] = (
+            pygame.mixer.Sound(
+                self.SoundRegistry[sound]
+            )
+        )
+
+    def unloadTexture(self, texture: str):
+        if texture not in self.Textures:
+            return
+
+        del self.Textures[texture]
+
+    def unloadSound(self, sound: str):
+        if sound not in self.Sounds:
+            return
+
+        del self.Sounds[sound]
+
+@dataclass
+class Access:
+    Textures: dict
+    Sounds: dict
+
+    def getTexture(self, texture: str):
+        if texture not in self.Textures:
+            raise Exception(f"Texture: {texture} not loaded")
+
+        return self.Textures[texture]
+
+    def getSound(self, sound: str):
+        if sound not in self.Sounds:
+            raise Exception(f"Sound: {sound} not loaded")
+
+        return self.Sounds[sound]
+
+@dataclass
 class AssetManager:
-    def __init__(self):
-        self.activeAssets = {}
+    Textures: dict = field(default_factory=dict)
+    Sounds: dict = field(default_factory=dict)
 
-        self.mainAssetsSource = r"C:\Users\luisk\User provided code\Python Projects\Factory Engine\Engine\Assets\Asset"
+    TextureRegistry: dict = field(default_factory=dict)
+    SoundRegistry: dict = field(default_factory=dict)
 
-    def loadSprite(self, name, asset, scale = (100, 100), sourceType = r"\SpriteAssets"):
-        if name not in self.activeAssets:
-            self.activeAssets[name] = (pygame.image.load(str(self.mainAssetsSource + sourceType + r"\\" + asset)).convert_alpha())
-            self.activeAssets[name] = (pygame.transform.scale(self.activeAssets[name], scale))
-            return name
-        else:
-            raise Exception("Name already in Assets")
+    BASE_DIRECTORY: str = r"C:\Users\luisk\User provided code\Python Projects\Take and Shape\Engine\Assets\Asset"
+    TEXTURE_DIRECTORY: str = os.path.join(
+        BASE_DIRECTORY, "SpriteAssets"
+    )
+    SOUND_DIRECTORY: str = os.path.join(
+        BASE_DIRECTORY, "SoundAssets"
+    )
 
-    def loadFont(self, name, text, size = 10):
-        if name not in self.activeAssets:
-            self.activeAssets[name] = (pygame.font.Font(text, size))
-            return name
-        else:
-            raise Exception("Name already in Assets")
+    Registry: Registry = field(init=False)
+    Loader: Loader = field(init=False)
+    Access: Access = field(init=False)
 
-    def loadSound(self, name, asset, sourceType = r"\SoundAssets"):
-        if name not in self.activeAssets:
-            self.activeAssets[name] = (pygame.mixer.Sound(str(self.mainAssetsSource + sourceType + asset)))
-            return name
-        else:
-            raise Exception("Name already in Assets")
+    def __post_init__(self):
+        self.Registry = Registry(
+            self.TextureRegistry,
+            self.SoundRegistry,
+            self.TEXTURE_DIRECTORY,
+            self.SOUND_DIRECTORY
+        )
 
-    def getAsset(self, asset):
-        if asset in self.activeAssets:
-            return self.activeAssets[asset]
-        else:
-            raise Exception("Asset not in Assets")
+        self.Loader = Loader(
+            self.Textures,
+            self.Sounds,
+            self.TextureRegistry,
+            self.SoundRegistry
+        )
 
-    def unload(self, asset):
-        if asset in self.activeAssets:
-            del self.activeAssets[asset]
-        else:
-            raise Exception("Asset not in Assets")
-
-    def clear(self):
-        self.activeAssets = {}
-
+        self.Access = Access(
+            self.Textures,
+            self.Sounds
+        )
