@@ -5,9 +5,9 @@ from ECS.Component import Speed
 
 
 class SaveManager:
-    def __init__(self, savePath, logFilePath):
-        self.savePath = savePath
-        self.logFilePath = logFilePath
+    def __init__(self):
+        self.savePath = r"C:\Users\luisk\User provided code\Python Projects\Factory Engine\Engine\SaveFile\Savefile.json"
+        self.logFilePath = r"C:\Users\luisk\User provided code\Python Projects\Factory Engine\Engine\SaveFile\Logfile.txt"
 
         self.classes = {}
 

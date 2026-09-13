@@ -1,18 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-from Engine.Core.EngineContext import EngineContext, RenderContext
+from Engine.Core.EngineContext import EngineContext
 from Engine.Core.Scenes import SceneManager
 from Engine.Core.Scheduler import Scheduler
 from Engine.Game.GameLoop import GameLoop
-
-from Events.CommandBus import CommandBus
-from Events.EventBus import EventBus
-from Debug.Logger import Logger
-from Debug.DebugManager import DebugManager
-from Engine.Core.SaveManager import SaveManager
-from Assets.AssetManager import AssetManager
-from Inputs.InputManager import InputManager
-from Engine.Core.Time import Time
+from Engine.Game.GameSetup import GameSetup
 
 import pygame
 
@@ -25,7 +17,9 @@ class Game:
     DISPLAY_WIDTH: int = 800
     DISPLAY_HEIGHT: int = 600
 
-    Clock: pygame.time.Clock = pygame.time.Clock()
+    Clock: pygame.time.Clock = field(default_factory =
+        pygame.time.Clock()
+    )
 
     RUNNING: bool = False
 
@@ -58,31 +52,24 @@ class Game:
 
             self.GameLoop.update()
 
+        self.shutdown()
+
+        pygame.quit()
+
+    def shutdown(self):
+        if self.RUNNING:
+            self.RUNNING = False
+
         self.EngineContext.SaveManager.save(
             self.EngineContext.Logger.saveLog(), "save"
         )
 
-        pygame.quit()
+    def profiling(self):
+        pass
 
 def main() -> None:
-    SavePath = r"C:\Users\luisk\User provided code\Python Projects\Factory Engine\Engine\SaveFile\Savefile.json"
-    LogPath = r"C:\Users\luisk\User provided code\Python Projects\Factory Engine\Engine\SaveFile\Logfile.txt"
-
-    game = Game(
-        EngineContext(
-            EventBus(),
-            CommandBus(),
-            Logger(),
-            DebugManager(),
-            Time(),
-            SaveManager(SavePath, LogPath),
-            InputManager(),
-            AssetManager(),
-            RenderContext()
-        ),
-        SceneManager(),
-        Scheduler()
-    )
+    Setup = GameSetup()
+    game = Setup.initializeEngine()
 
     game.build()
     game.run()
