@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 
 import pygame
 from enum import Enum, auto
+from Engine.Math import Math as math
 
 class InputAction(Enum):
     MoveForward = auto()
@@ -136,6 +137,12 @@ class InputManager:
             return key in self.MouseKeys
 
         return False
+
+    def Axis(self, bindX: InputAction, bindY: InputAction):
+        return math.Util.normalize(
+            1 if self.IsActionPressed(bindX) else 0,
+            1 if self.IsActionPressed(bindY) else 0
+        )
 
     def update(self):
         self.PreviousKeys = self.Keys.copy()
