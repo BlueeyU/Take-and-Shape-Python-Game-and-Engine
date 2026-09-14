@@ -28,6 +28,18 @@ class Vector2:
     x: float
     y: float
 
+    def __add__(self, other):
+        return Vector2(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        return Vector2(self.x - other.x, self.y - other.y)
+
+    def __mul__(self, other):
+        return Vector2(self.x * other.x, self.y * other.y)
+
+    def __truediv__(self, other):
+        return Vector2(self.x / other.x, self.y / other.y)
+
 @dataclass
 class Vector3:
     x: float

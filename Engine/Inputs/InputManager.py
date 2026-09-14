@@ -151,16 +151,20 @@ class InputManager:
         self.processEvents()
 
     def processEvents(self):
+        keyStates = pygame.key.get_pressed()
+
         self.Keys = {
-            key for key, pressed
-            in enumerate(pygame.key.get_pressed())
-            if pressed
+            key
+            for key in range(len(keyStates))
+            if keyStates[key]
         }
 
+        mouseStates = pygame.mouse.get_pressed()
+
         self.MouseKeys = {
-            key for key, pressed
-            in enumerate(pygame.mouse.get_pressed())
-            if pressed
+            button
+            for button in range(len(mouseStates))
+            if mouseStates[button]
         }
 
         self.MousePosition = pygame.mouse.get_pos()

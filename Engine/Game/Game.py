@@ -4,7 +4,7 @@ from Engine.Core.EngineContext import EngineContext
 from Engine.Core.Scenes import SceneManager
 from Engine.Core.Scheduler import Scheduler
 from Engine.Game.GameLoop import GameLoop
-from Engine.Game.GameSetup import GameSetup
+from Engine.Game import GameSetup
 
 import pygame
 
@@ -14,11 +14,8 @@ class Game:
     SceneManager: SceneManager
     Scheduler: Scheduler
 
-    DISPLAY_WIDTH: int = 800
-    DISPLAY_HEIGHT: int = 600
-
     Clock: pygame.time.Clock = field(default_factory =
-        pygame.time.Clock()
+        pygame.time.Clock
     )
 
     RUNNING: bool = False
@@ -31,12 +28,6 @@ class Game:
         )
 
     def build(self):
-        pygame.init()
-
-        self.EngineContext.RenderContext.Display = pygame.display.set_mode(
-            (self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT)
-        )
-
         self.RUNNING = True
 
     def run(self):
@@ -60,6 +51,9 @@ class Game:
         if self.RUNNING:
             self.RUNNING = False
 
+        for scene in self.SceneManager.LoadedScenes:
+            scene._onStop()
+
         self.EngineContext.SaveManager.save(
             self.EngineContext.Logger.saveLog(), "save"
         )
@@ -68,7 +62,7 @@ class Game:
         pass
 
 def main() -> None:
-    Setup = GameSetup()
+    Setup = GameSetup.GameSetup()
     game = Setup.initializeEngine()
 
     game.build()

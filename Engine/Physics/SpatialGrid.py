@@ -1,7 +1,6 @@
-from Assets.AssetManager import AssetManager
-from ECS import Component as cmp
+
+from Engine.ECS import Component
 from Math import Math as math
-import numpy
 from itertools import product
 
 class SpatialGrid:
@@ -10,10 +9,13 @@ class SpatialGrid:
         self.entityCells = {}
         self.gridsize = 100
 
-    def build(self, componentManager, assetManager):
-        entities = list(componentManager.query(cmp.Transform))
-        colliderEntities = list(componentManager.query(cmp.Collider))
-        spriteEntities = list(componentManager.query(cmp.Sprite))
+    def build(self, componentManager, assetManager = None):
+        entities = list(componentManager.query(Component.Transform))
+        colliderEntities = list(componentManager.query(Component.Collider))
+        if not assetManager is None:
+            spriteEntities = list(componentManager.query(Component.Sprite))
+        else:
+            spriteEntities = []
 
         entityListLength = len(entities)
 
@@ -33,28 +35,28 @@ class SpatialGrid:
             if entityListLength * 0.75 + 1 > count >= entityListLength * 0.75:
                 print("SpatialGrid build Status: 75% done")
 
-            pos = componentManager.getComponent(entity, cmp.Transform).position
+            pos = componentManager.getComponent(entity, Component.Transform).position
 
             if entity not in colliderEntities and entity not in spriteEntities:
                 self.insertEntity(entity, pos)
 
             if entity in colliderEntities and entity in spriteEntities:
-                spriteTexture = componentManager.getComponent(entity, cmp.Sprite).textureName
+                spriteTexture = componentManager.getComponent(entity, Component.Sprite).textureName
                 sprite = assetManager.getAsset(spriteTexture)
 
-                col = componentManager.getComponent(entity, cmp.Collider)
+                col = componentManager.getComponent(entity, Component.Collider)
 
                 self.insertEntity(entity, math.Vector2(pos.x, pos.y), math.Vector2(max(col.width, sprite.width), max(col.height, sprite.height)))
                 continue
 
             if entity in colliderEntities:
-                col = componentManager.getComponent(entity, cmp.Collider)
+                col = componentManager.getComponent(entity, Component.Collider)
 
                 self.insertEntity(entity, math.Vector2(pos.x, pos.y), math.Vector2(col.width, col.height))
                 continue
 
             if entity in spriteEntities:
-                spriteTexture = componentManager.getComponent(entity, cmp.Sprite).textureName
+                spriteTexture = componentManager.getComponent(entity, Component.Sprite).textureName
                 sprite = assetManager.getAsset(spriteTexture)
 
                 self.insertEntity(entity, math.Vector2(pos.x, pos.y), math.Vector2(sprite.width, sprite.height))

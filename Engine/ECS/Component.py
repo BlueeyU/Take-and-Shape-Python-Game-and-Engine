@@ -23,7 +23,7 @@ class Acceleration: # A Component which changes the VELOCITY of its Entity over 
     acceleration: math.Vector2
 
 @dataclass
-class Speed: # TEMPORARY -> belongs in Game Specific Components
+class Speed: # TEMPORARY -> belongs in FactoryGame Specific Components
     speed: int
 
 @dataclass

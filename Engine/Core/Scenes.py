@@ -41,7 +41,13 @@ class Scene:
 
         for components in self.entityQueue:
             entity = self.EntityManager.createEntity()
-            self.ComponentManager.addComponents(entity, *components)
+
+            self.ComponentManager.addComponents(
+                entity,
+                *components
+            )
+
+        self.SpatialGrid.build(self.ComponentManager)
 
         self.entityQueue.clear()
 
@@ -84,8 +90,8 @@ class SceneManager:
         if scene not in self.UnloadedScenes or scene in self.LoadedScenes:
             return
 
-        scene.construct()
         scene._onStart()
+        scene.construct()
 
         self.LoadedScenes.append(scene)
         self.UnloadedScenes.remove(scene)

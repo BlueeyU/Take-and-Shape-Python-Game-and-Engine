@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+import pygame
+
 from Engine.Core.EngineContext import EngineContext
 from Engine.Core.Scenes import SceneManager
 from Engine.Core.Scheduler import Scheduler
@@ -49,7 +51,9 @@ class GameLoop:
         )
 
         if scheduler.renderReady():
+            self.EngineContext.RenderContext.Display.fill((0, 0, 0))
             Scene.SystemManager.RenderingTick()
+            pygame.display.flip()
 
         self.EngineContext.EventBus.clear()
 

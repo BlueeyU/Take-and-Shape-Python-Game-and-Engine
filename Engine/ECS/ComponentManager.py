@@ -27,12 +27,14 @@ class ComponentManager:
             return entityID in self.components[component]
         return False
 
-    def getComponent(self, entityID, component):
-        if component not in self.components:
-            raise Exception("Component not in Components")
-        if entityID not in self.components[component]:
-            raise Exception("EntityID not in Components")
-        return self.components[component][entityID]
+    def getComponent(self, entityID, *components):
+        if len(components) == 1:
+            return self.components[components[0]][entityID]
+
+        return tuple(
+            self.components[component][entityID]
+            for component in components
+        )
 
     def removeAll(self, entityID):
         for componentType in self.components:
@@ -43,9 +45,14 @@ class ComponentManager:
         if not components:
             return
 
-        componentSets = [self.components.get(component, {}) for component in components]
+        componentSets = [
+            self.components.get(component, {})
+            for component in components
+        ]
 
-        componentSets.sort(key=len)
+        componentSets.sort(
+            key = len
+        )
 
         entityIDs = set(componentSets[0].keys())
 
@@ -59,7 +66,10 @@ class ComponentManager:
         if not components:
             return
 
-        componentSets = [self.components.get(component, {}) for component in components]
+        componentSets = [
+            self.components.get(component, {})
+            for component in components
+        ]
 
         entityIDs = set(entities)
 
